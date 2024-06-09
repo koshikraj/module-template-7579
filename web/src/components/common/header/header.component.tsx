@@ -22,7 +22,7 @@ import Gnosis from '../../../assets/icons/gno.svg';
 import { RoutePath } from '../../../navigation/route-path';
 import { NetworkUtil } from '../../../logic/networks';
 
-import useLinkStore from '../../../store/account/link.store';
+import useLinkStore from '../../../store/link/link.store';
 import { getProvider } from '../../../logic/web3';
 import classes from './header.component.module.css';
 import { IconBrandTwitterFilled } from '@tabler/icons-react';
@@ -81,7 +81,7 @@ export const Head = (props) => {
                 onClick={() => {
                   navigate(RoutePath.home);
                 }}
-                style={{ cursor: 'pointer', width: '180px' }}
+                style={{ cursor: 'pointer', width: '220px' }}
                 src={dark ? LogoDark : LogoLight}
                 alt="Logo"
               />
@@ -89,6 +89,17 @@ export const Head = (props) => {
 
             <Group className={classes.mode}>
 
+             {isMobile ?  <IconKey
+                    size={30}
+                    stroke={1.5}
+                    onClick={() => navigate(RoutePath.account)}
+                    style={{ cursor: 'pointer' }}
+                  /> :
+
+                  <Button leftSection={<IconKey size={20} />}  onClick={() => navigate(RoutePath.account)} variant="default">
+                     Account 
+                  </Button> 
+                  }
               <div className={classes.container}>
                 
                 {dark ? (

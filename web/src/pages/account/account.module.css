@@ -30,8 +30,11 @@
 }
 
 .balance{
+    display: flex;
     font-size: 30px;
     font-weight: bold;
+    align-items: center;
+    justify-content: center;
 }
 
 .avatar{
@@ -123,62 +126,4 @@ background: linear-gradient(to left, #00FF00 0%, #00FFFF 100%);
   gap:20px */
   display: flex;
   flex-direction: column;
-}
-
-.card {
-  position: relative;
-  overflow: visible;
-  padding: var(--mantine-spacing-xl);
-  /* padding-top: calc(var(--mantine-spacing-xl) * 1.5 + rem(20px)); */
-}
-
-.icon {
-  position: absolute;
-  top: rem(-20px);
-  left: calc(50% - rem(30px));
-}
-
-.title {
-  font-family:
-    Greycliff CF,
-    var(--mantine-font-family);
-  line-height: 1;
-}
-
-.claimHeading{
-  margin-bottom: 0;
-  text-align: center;
-  background: #00FF00;
-  font-size: 35px;
-  background: -webkit-linear-gradient(to left, #00FF00 0%, #00FFFF 100%);
-  background: -moz-linear-gradient(to left, #00FF00 0%, #00FFFF 100%);
-  background: linear-gradient(to left, #00FF00 0%, #00FFFF 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-
-
-.claimInner{
-  display: flex;
-  align-items: center; 
-  margin-top: 0;
-  margin-bottom: 0;
-  text-align: center;
-  justify-content: center;
-  background: #00FF00;
-  column-gap: 20px;
-  font-size: 45px;
-  background: -webkit-linear-gradient(to left, #00FF00 0%, #00FFFF 100%);
-  background: -moz-linear-gradient(to left, #00FF00 0%, #00FFFF 100%);
-  background: linear-gradient(to left, #00FF00 0%, #00FFFF 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-
-.links {
-  margin-top: 0;
-  font-size: 35px;
-  text-align: center;
-  font-weight: 700;
-  color: light-dark(var(--mantine-color-gray-7),var(--mantine-color-white-2));
 }

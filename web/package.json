@@ -20,10 +20,8 @@
     "storybook:build": "storybook build"
   },
   "dependencies": {
-    "@account-abstraction/utils": "^0.6.0",
-    "@gelatonetwork/relay-sdk": "^3.1.0",
     "@mantine/core": "7.8.1",
-    "@mantine/dates": "^7.8.1",
+    "@mantine/dates": "7.8.1",
     "@mantine/hooks": "7.8.1",
     "@privy-io/react-auth": "^1.63.0",
     "@safe-global/safe-apps-provider": "^0.17.1",
@@ -31,7 +29,6 @@
     "@tabler/icons": "^1.79.0",
     "@tabler/icons-react": "^2.44.0",
     "@types/node": "^20.10.4",
-    "@zerodev/passkey-validator": "^5.2.7",
     "axios": "^1.4.0",
     "buffer": "^6.0.3",
     "dayjs": "^1.11.10",

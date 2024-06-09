@@ -1,7 +1,7 @@
 {
-  "short_name": "Module template App",
-  "name": "Module template 7579 Safe App",
-  "description": "Module template 7579 Safe App",
+  "short_name": "SafeValidator App",
+  "name": "SafeValidator App",
+  "description": "A 7579 validator demo for Safe Accounts",
   "iconPath": "logo192.png",
   "icons": [
     {

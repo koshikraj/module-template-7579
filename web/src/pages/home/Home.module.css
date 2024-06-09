@@ -45,7 +45,7 @@
   } */
 
 .homeContainer {
-  max-width: 600px;
+  max-width: 500px;
   margin: 0 auto;
   /* border: 0px solid #4a4a4a; */
   /* background-color: #fff ; */
@@ -103,7 +103,6 @@
   margin-bottom: 0;
 }
 
-
 .actions{
   margin-top: 20px;
   display: flex;
@@ -128,15 +127,6 @@
   text-align: center;
 }
 
-.topHeading {
-  padding-top: 15px;
-  font-size: 16px;
-  color: #868e96;
-  
-  /* text-align: center; */
-  
-}
-
 .inputContainer {
   /* display: flex;
   align-items: center;
@@ -146,7 +136,6 @@
   flex-direction: column;
   gap: 10px;
   margin-bottom: 20px;
-  margin-top: 20px;
 }
 
 .selectGroup {
@@ -165,13 +154,6 @@
   transition: 0.5s;
   background-size: 200% auto;
   color: white;
-}
-
-.card {
-  position: relative;
-  overflow: visible;
-  padding: var(--mantine-spacing-xl);
-  /* padding-top: calc(var(--mantine-spacing-xl) * 1.5 + rem(20px)); */
 }
 
 .btn:hover {
@@ -205,7 +187,8 @@
 }
 
 .network {
-  padding: 10px;
+  width: 40%;
+  height: 50px;
   margin-left: 5px;
   /* @media (max-width: 500px) {
     visibility: hidden;

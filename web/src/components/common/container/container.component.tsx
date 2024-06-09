@@ -1,6 +1,6 @@
 import { Dialog, Notification, useMantineTheme } from '@mantine/core';
 import { IconCheck } from '@tabler/icons';
-import useLinkStore from '../../../store/account/account.store';
+import useLinkStore from '../../../store/link/link.store';
 import styled from 'styled-components';
 
 const StyledContainer = styled.div`

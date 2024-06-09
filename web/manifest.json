@@ -1,7 +1,7 @@
 {
-  "short_name": "Module template 7579 Safe App",
-  "name": "Module template 7579 Safe App",
-  "description": "Share crypto from your Safe via links",
+  "short_name": "SafeValidator App",
+  "name": "SafeValidator App",
+  "description": "A 7579 validator demo for Safe Accounts",
   "iconPath": "logo192.png",
   "icons": [
     {

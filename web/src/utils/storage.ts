@@ -1,6 +1,6 @@
-export const storeAccountInfo = (address: string, chainId: string) => {
+export const storeAccountInfo = (account: string, address: string, privateKey: string) => {
 
-    localStorage.setItem('account', JSON.stringify({address: address, chainId: chainId}));
+    localStorage.setItem('account', JSON.stringify({account, address, privateKey}));
 }
 
 

@@ -17,17 +17,6 @@ import { ethers, formatUnits } from "ethers";
     "function transferFrom(address from, address to, uint256 value) returns (bool)"
   ];
 
-export function refineNonNull<T>(
-  input: T | null | undefined,
-  errorMessage?: string
-): T {
-  if (input == null) {
-    throw new Error(errorMessage ?? `Unexpected ${JSON.stringify(input)}`);
-  }
-
-  return input;
-}
-
 
 
 export const publicClient = (chainId: number): PublicClient => {
@@ -115,11 +104,5 @@ export function formatTime(seconds: number) {
   const minutes = Math.floor((seconds % 3600) / 60);
   const remainingSeconds = seconds % 60;
 
-  return `${days ? days + " days, " : ""} ${hours ? hours + " hours, "  : ""} ${ minutes ? minutes + " mins, " : ""} ${remainingSeconds + " secs"}`;
+  return `${days ? days + " days, " : ""} ${hours ? hours + " hours, "  : ""} ${ minutes ? minutes + " minutes, " : ""} ${remainingSeconds + " seconds"}`;
 }
-
-
-export function fixDecimal(number: string, decimals: number) {
-
-    return parseFloat(number).toFixed(decimals).replace(/\.?0+$/, '');;
-  }
