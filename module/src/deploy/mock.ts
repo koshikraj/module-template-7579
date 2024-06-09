@@ -19,6 +19,13 @@ const deploy: DeployFunction = async ({ deployments, getNamedAccounts, network }
     deterministicDeployment: true,
   })
 
+  await deploy('MockTarget', {
+    from: deployer,
+    args: [],
+    log: true,
+    deterministicDeployment: true,
+  })
+
 
   await deploy('Safe4337Mock', {
     from: deployer,

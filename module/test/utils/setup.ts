@@ -38,9 +38,14 @@ export const getSafeTemplate = async (for4337 = false, saltNumber = getRandomInt
   return await ethers.getContractAt(for4337 ? 'Safe4337Mock' : 'SafeMock', template)
 }
 
-export const getSpendLimitModule = async () => {
-  const ModuleDeployment = await deployments.get('SpendLimitModule')
-  return await ethers.getContractAt('SpendLimitModule', ModuleDeployment.address)
+export const getMockTarget = async () => {
+  const ModuleDeployment = await deployments.get('MockTarget')
+  return await ethers.getContractAt('MockTarget', ModuleDeployment.address)
+}
+
+export const getOwnableValidator = async () => {
+  const validator = await deployments.get('OwnableValidator')
+  return await ethers.getContractAt('OwnableValidator', validator.address)
 }
 
 export const getSafe7579 = async () => {
