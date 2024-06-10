@@ -2540,29 +2540,21 @@
   resolved "https://registry.npmjs.org/@rollup/rollup-linux-x64-musl/-/rollup-linux-x64-musl-4.18.0.tgz"
   integrity sha512-LKaqQL9osY/ir2geuLVvRRs+utWUNilzdE90TpyoX0eNqPzWjRm14oMEE+YLve4k/NAqCdPkGYDaDF5Sw+xBfg==
 
-"@safe-global/safe-apps-provider@^0.17.1":
-  version "0.17.1"
-  resolved "https://registry.npmjs.org/@safe-global/safe-apps-provider/-/safe-apps-provider-0.17.1.tgz"
-  integrity sha512-lYfRqrbbK1aKU1/UGkYWc/X7PgySYcumXKc5FB2uuwAs2Ghj8uETuW5BrwPqyjBknRxutFbTv+gth/JzjxAhdQ==
+"@safe-global/safe-apps-provider@^0.18.2":
+  version "0.18.2"
+  resolved "https://registry.npmjs.org/@safe-global/safe-apps-provider/-/safe-apps-provider-0.18.2.tgz"
+  integrity sha512-yHHAcppwE7aIUWEeZiYAClQzZCdP5l0Kbd0CBlhKAsTcqZnx4Gh3G3G3frY5LlWcGzp9qmQ5jv+J1GBpaZLDgw==
   dependencies:
-    "@safe-global/safe-apps-sdk" "8.0.0"
+    "@safe-global/safe-apps-sdk" "^9.0.0"
     events "^3.3.0"
 
-"@safe-global/safe-apps-sdk@^8.0.0":
-  version "8.1.0"
-  resolved "https://registry.npmjs.org/@safe-global/safe-apps-sdk/-/safe-apps-sdk-8.1.0.tgz"
-  integrity sha512-XJbEPuaVc7b9n23MqlF6c+ToYIS3f7P2Sel8f3cSBQ9WORE4xrSuvhMpK9fDSFqJ7by/brc+rmJR/5HViRr0/w==
+"@safe-global/safe-apps-sdk@^9.0.0":
+  version "9.0.0"
+  resolved "https://registry.npmjs.org/@safe-global/safe-apps-sdk/-/safe-apps-sdk-9.0.0.tgz"
+  integrity sha512-fEqmQBU3JqTjORSl3XYrcaxdxkUqeeM39qsQjqCzzTHioN8DEfg3JCLq6EBoXzcKTVOYi8SPzLV7KJccdDw+4w==
   dependencies:
     "@safe-global/safe-gateway-typescript-sdk" "^3.5.3"
-    viem "^1.0.0"
-
-"@safe-global/safe-apps-sdk@8.0.0":
-  version "8.0.0"
-  resolved "https://registry.npmjs.org/@safe-global/safe-apps-sdk/-/safe-apps-sdk-8.0.0.tgz"
-  integrity sha512-gYw0ki/EAuV1oSyMxpqandHjnthZjYYy+YWpTAzf8BqfXM3ItcZLpjxfg+3+mXW8HIO+3jw6T9iiqEXsqHaMMw==
-  dependencies:
-    "@safe-global/safe-gateway-typescript-sdk" "^3.5.3"
-    viem "^1.0.0"
+    viem "^1.6.0"
 
 "@safe-global/safe-gateway-typescript-sdk@^3.5.3":
   version "3.21.2"
@@ -12566,7 +12558,7 @@ vary@~1.1.2:
   resolved "https://registry.npmjs.org/vary/-/vary-1.1.2.tgz"
   integrity sha512-BNGbWLfd0eUPabhkXUVm0j8uuvREyTh5ovRa/dyow/BqAbZJyC+5fU+IzQOzmAKzYqYRAISoRhdQr3eIZ/PXqg==
 
-viem@^1.0.0:
+viem@^1.6.0:
   version "1.21.4"
   resolved "https://registry.npmjs.org/viem/-/viem-1.21.4.tgz"
   integrity sha512-BNVYdSaUjeS2zKQgPs+49e5JKocfo60Ib2yiXOWBT6LuVxY1I/6fFX3waEtpXvL1Xn4qu+BVitVtMh9lyThyhQ==
