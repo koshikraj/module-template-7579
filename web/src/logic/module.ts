@@ -2,21 +2,15 @@ import { Contract, ZeroAddress, parseEther, parseUnits, getBytes, JsonRpcProvide
 import { ethers, utils } from 'ethersv5';
 import { BaseTransaction } from '@safe-global/safe-apps-sdk';
 import { getSafeInfo, isConnectedToSafe, submitTxs } from "./safeapp";
-import { isModuleEnabled, buildEnableModule, isGuardEnabled, buildEnableGuard, buildUpdateFallbackHandler } from "./safe";
+import { isModuleEnabled, buildEnableModule, buildUpdateFallbackHandler } from "./safe";
 import { getJsonRpcProvider, getProvider } from "./web3";
 import Safe7579 from "./Safe7579.json"
 import EntryPoint from "./EntryPoint.json"
-import { getTokenDecimals, publicClient } from "./utils";
+import {  publicClient } from "./utils";
 import {  buildUnsignedUserOpTransaction } from "@/utils/userOp";
-import { createClient, http, Chain, Hex, pad, custom, createWalletClient } from "viem";
+import {  Hex, pad } from "viem";
 import { sepolia } from 'viem/chains'
-import { bundlerActions, ENTRYPOINT_ADDRESS_V07, createBundlerClient, getPackedUserOperation, UserOperation, getAccountNonce } from 'permissionless'
-import { PackedUserOperation } from "permissionless/types/userOperation";
-import { createPimlicoBundlerClient, createPimlicoPaymasterClient } from "permissionless/clients/pimlico";
-import { pimlicoBundlerActions, pimlicoPaymasterActions } from 'permissionless/actions/pimlico'
-import { loadAccountInfo } from "@/utils/storage";
-import { privateKeyToAccount } from "viem/accounts";
-import { EIP1193Provider } from "@privy-io/react-auth";
+import { ENTRYPOINT_ADDRESS_V07, getPackedUserOperation, UserOperation, getAccountNonce } from 'permissionless'
 import { sendUserOperation } from "./permissionless";
 
 const safe7579Module = "0x94952C0Ea317E9b8Bca613490AF25f6185623284"
@@ -66,17 +60,9 @@ export async function signAddress(string: string, privateKey: string) {
 
 
 
-export const sendTransaction = async (chainId: string, recipient: string, amount: bigint, walletProvider: any): Promise<any> => {
+export const sendTransaction = async (chainId: string, recipient: string, amount: bigint, walletProvider: any, safeAccount: string): Promise<any> => {
 
-    const provider = await getProvider()
-    // Updating the provider RPC if it's from the Safe App.
-    // const chainId = (await provider.getNetwork()).chainId.toString()
-    const bProvider = await getJsonRpcProvider(chainId)
-
-    const safeAccount = loadAccountInfo().account
-
-    const call = {target: recipient as Hex, value: amount, callData: '0x' as Hex}
-
+    const call = { target: recipient as Hex, value: amount, callData: '0x' as Hex }
 
     const key = BigInt(pad(ownableModule as Hex, {
         dir: "right",
@@ -98,58 +84,22 @@ export const sendTransaction = async (chainId: string, recipient: string, amount
 
       const signUserOperation = async function signUserOperation(userOperation: UserOperation<"v0.7">) {
 
-        const bProvider = await getJsonRpcProvider(chainId)
+        const provider = await getJsonRpcProvider(chainId)
     
         const entryPoint = new Contract(
             ENTRYPOINT_ADDRESS_V07,
             EntryPoint.abi,
-            bProvider
+            provider
         )
         let typedDataHash = getBytes(await entryPoint.getUserOpHash(getPackedUserOperation(userOperation)))
         return await walletProvider.signMessage(typedDataHash) as `0x${string}`
     
     }
 
-
     const userOperationHash = await sendUserOperation(chainId, unsignedUserOp, signUserOperation )
 
     return userOperationHash;
-
-
-
-
 }
-
-
-export const waitForExecution = async (userOperationHash: string) => {
-
-
-    const chain = "sepolia" 
-
-
-    const pimlicoEndpoint = `https://api.pimlico.io/v2/${chain}/rpc?apikey=${import.meta.env.VITE_PIMLICO_API_KEY}`
-
-
-    const bundlerClient = createClient({
-        transport: http(pimlicoEndpoint),
-        chain: sepolia as Chain,
-    })
-        .extend(bundlerActions(ENTRYPOINT_ADDRESS_V07))
-        .extend(pimlicoBundlerActions(ENTRYPOINT_ADDRESS_V07))
-
-     const paymasterClient = createPimlicoPaymasterClient({
-        transport: http(pimlicoEndpoint),
-        entryPoint: ENTRYPOINT_ADDRESS_V07,
-    })
-    
-
-    const receipt = await bundlerClient.waitForUserOperationReceipt({ hash: userOperationHash as Hex })
-
-    return receipt;
-
-}
-
-
 
 
 const buildInitSafe7579 = async ( ): Promise<BaseTransaction> => {
@@ -225,14 +175,6 @@ export const addValidatorModule = async (ownerAddress: string ) => {
     // Updating the provider RPC if it's from the Safe App.
     const chainId = (await provider.getNetwork()).chainId.toString()
 
-    if (txs.length == 0) return {address: '', privateKey: ''}
+    if (txs.length > 0)  
     await submitTxs(txs)
-
 }
-
-
-
-
-
-
-

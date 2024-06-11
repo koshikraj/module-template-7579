@@ -23,7 +23,6 @@
     "@mantine/core": "7.8.1",
     "@mantine/dates": "7.8.1",
     "@mantine/hooks": "7.8.1",
-    "@privy-io/react-auth": "^1.63.0",
     "@safe-global/safe-apps-provider": "^0.18.2",
     "@safe-global/safe-apps-sdk": "^9.0.0",
     "@tabler/icons": "^1.79.0",

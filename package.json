@@ -5,7 +5,8 @@
   "main": "dist/index.js",
   "workspaces": [
     "packages/*",
-    "module"
+    "module",
+    "web"
   ],
   "scripts": {
     "fmt:global": "prettier --write .",

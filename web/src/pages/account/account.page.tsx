@@ -11,10 +11,11 @@ import Confetti from 'react-confetti';
 import { getIconForId, getTokenInfo, getTokenList, tokenList } from '@/logic/tokens';
 import { getJsonRpcProvider } from '@/logic/web3';
 
-import { generateKeysFromString, generateRandomString, sendTransaction, waitForExecution } from '@/logic/module';
+import { generateKeysFromString, generateRandomString, sendTransaction } from '@/logic/module';
 import { loadAccountInfo, storeAccountInfo } from '@/utils/storage';
 
 import Key from '../../assets/icons/key.svg';
+import { waitForExecution } from '@/logic/permissionless';
 
 
 
@@ -155,14 +156,14 @@ export const AccountPage = () => {
             parseAmount = 0n;
             toAddress = value;
         }
-    const result = await sendTransaction(chainId.toString(), toAddress, parseAmount, walletProvider)
+    const result = await sendTransaction(chainId.toString(), toAddress, parseAmount, walletProvider, safeAccount)
     if (!result)
     setSendSuccess(false);
     else {
     setSendSuccess(true);
     setSendModal(false);
     setConfirming(true);
-    await waitForExecution(result);
+    await waitForExecution(chainId.toString(), result);
     setConfirming(false);
 
     }

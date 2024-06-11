@@ -14,20 +14,17 @@
     "build"
   ],
   "scripts": {
-    "build": "",
+    "build": "npm run build:sol",
     "build:sol": "rimraf build typechain-types && hardhat compile",
     "build:ts": "rimraf dist && tsc",
     "test": "hardhat test --deploy-fixture",
-    "test:4337": "4337-local-bundler-test",
-    "test:4337:upstream": "USE_UPSTREAM_BUNDLER=1 4337-local-bundler-test",
-    "test:all": "npm run test && npm run test:4337",
     "deploy-all": "hardhat deploy-contracts --network",
     "deploy": "hardhat deploy --network",
     "prepare": "npm run build"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/safe-global/safe-modules.git"
+    "url": "git+https://github.com/koshikraj/module-template-7579.git"
   },
   "keywords": [
     "Ethereum",
@@ -37,7 +34,7 @@
   ],
   "author": "@safe-global",
   "bugs": {
-    "url": "https://github.com/safe-global/safe-modules/issues"
+    "url": "https://github.com/koshikraj/module-template-7579/issues"
   },
   "devDependencies": {
     "@account-abstraction/contracts": "^0.7.0",
@@ -54,7 +51,6 @@
     "@openzeppelin/contracts": "^4.9.2",
     "@safe-global/safe-4337-local-bundler": "^0.0.0",
     "@safe-global/safe-4337-provider": "^0.0.0",
-    "@simplewebauthn/server": "9.0.3",
     "@typechain/ethers-v6": "^0.5.1",
     "@typechain/hardhat": "^9.1.0",
     "@types/chai": "^4.3.14",
