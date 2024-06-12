@@ -25,7 +25,6 @@ import { NetworkUtil } from '../../../logic/networks';
 import useLinkStore from '../../../store/link/link.store';
 import { getProvider } from '../../../logic/web3';
 import classes from './header.component.module.css';
-import { IconBrandTwitterFilled } from '@tabler/icons-react';
 
 const badgeIcons = [
   { ids: ['84531'], img: Base },

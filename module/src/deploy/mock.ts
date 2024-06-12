@@ -33,8 +33,6 @@ const deploy: DeployFunction = async ({ deployments, getNamedAccounts, network }
     log: true,
     deterministicDeployment: true,
   })
-
-
 }
 
 deploy.dependencies = ['entrypoint']

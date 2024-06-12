@@ -91,8 +91,6 @@ describe('Safe7579 - Basic tests', () => {
       
       await logGas('Execute UserOp without a prefund payment', entryPoint.handleOps([userOp], relayer))
       expect(await ethers.provider.getBalance(await safe.getAddress())).to.be.eq(ethers.parseEther('0'))
-
-
     })
 
 

@@ -7,7 +7,6 @@ import { buildTransferToken, getTokenBalance, getTokenDecimals } from '@/logic/u
 import { useDisclosure } from '@mantine/hooks';
 import { IconCheck, IconChevronDown, IconCoin, IconConfetti, IconCopy } from '@tabler/icons';
 import { NetworkUtil } from '@/logic/networks';
-import Confetti from 'react-confetti';
 import { getIconForId, getTokenInfo, getTokenList, tokenList } from '@/logic/tokens';
 import { getJsonRpcProvider } from '@/logic/web3';
 
@@ -575,7 +574,6 @@ export const AccountPage = () => {
         </div>
       </div>
     </Paper>
-    {  Boolean(claimDetails.amount) && <Confetti width={dimensions.width} height={dimensions.height} /> }
     </>
   );
 };
