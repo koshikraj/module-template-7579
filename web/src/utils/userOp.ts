@@ -202,11 +202,11 @@ export const buildSafeUserOpTransaction = (
 
 export const buildUnsignedUserOpTransaction = (
   from: string,
-  action: Action,
+  actions: Action[],
   nonce: bigint,
 ): UserOperation<"v0.7"> => {
 
-  const callData =  encodeUserOpCallData({actions: [action]})
+  const callData =  encodeUserOpCallData({actions: actions})
 
   return {
     sender: from as Hex,

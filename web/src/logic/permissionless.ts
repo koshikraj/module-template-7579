@@ -41,8 +41,6 @@ export const sendUserOperation = async (chainId: string, unsignedUserOp: UserOpe
   unsignedUserOp.maxFeePerGas = gasPrice.fast.maxFeePerGas;
   unsignedUserOp.maxPriorityFeePerGas = gasPrice.fast.maxPriorityFeePerGas;
 
-  console.log(unsignedUserOp)
-
 
   const sponsorUserOperationResult = await paymasterClient.sponsorUserOperation({
     userOperation: unsignedUserOp
@@ -54,9 +52,7 @@ export const sendUserOperation = async (chainId: string, unsignedUserOp: UserOpe
   };
 
 
-  console.log(sponsoredUserOperation)
 
-  console.log(await userOpSigner(sponsoredUserOperation))
   sponsoredUserOperation.signature  = await userOpSigner(sponsoredUserOperation)
 
   const userOperationHash = await pimlicoBundlerClient.sendUserOperation({

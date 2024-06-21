@@ -99,7 +99,7 @@ function HomePage() {
         <>
           <div className={classes.successContainer}>
             <Paper className={classes.formContainer} shadow="md" withBorder radius="md" >
-              <h1 className={classes.heading}>YOu are all set!</h1>
+              <h1 className={classes.heading}>You are all set!</h1>
 
               <p className={classes.subheading} style={{ textAlign: 'center' }}>
                 

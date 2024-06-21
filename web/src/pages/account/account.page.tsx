@@ -169,7 +169,7 @@ export const AccountPage = () => {
     
     
   } catch(e) {
-    console.log('error')
+    console.log('error', e)
     setSendLoader(false);  
   }  
   setSendLoader(false);

@@ -8,16 +8,23 @@ import Safe7579 from "./Safe7579.json"
 import EntryPoint from "./EntryPoint.json"
 import {  publicClient } from "./utils";
 import {  buildUnsignedUserOpTransaction } from "@/utils/userOp";
-import {  Hex, pad } from "viem";
-import { sepolia } from 'viem/chains'
+import {  Address, Hex, pad } from "viem";
 import { ENTRYPOINT_ADDRESS_V07, getPackedUserOperation, UserOperation, getAccountNonce } from 'permissionless'
 import { sendUserOperation } from "./permissionless";
+import {
+    getClient,
+    getModule,
+    getAccount,
+    installModule,
+    isModuleInstalled,
+    getInstalledModules,
+    ModuleType
+  } from "@rhinestone/module-sdk";
+import { NetworkUtil } from "./networks";
+   
 
 const safe7579Module = "0x94952C0Ea317E9b8Bca613490AF25f6185623284"
 const ownableModule = "0xe90044FE8855B307Fe8F9848fd9558D5D3479191"
-
-
-
 export function generateRandomString(length: number) {
     const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
     let result = '';
@@ -46,23 +53,9 @@ export function generateKeysFromString(string: string) {
 
 
 
-
-/**
- * Hashes a plain address, adds an Ethereum message prefix, hashes it again and then signs it
- */
-export async function signAddress(string: string, privateKey: string) {
-    const stringHash = ethers.utils.solidityKeccak256(['address'], [string]) // v5
-    const stringHashbinary = ethers.utils.arrayify(stringHash) // v5
-    const signer = new ethers.Wallet(privateKey)
-    const signature = await signer.signMessage(stringHashbinary) // this calls ethers.hashMessage and prefixes the hash
-    return signature
-}
-
-
-
 export const sendTransaction = async (chainId: string, recipient: string, amount: bigint, walletProvider: any, safeAccount: string): Promise<any> => {
 
-    const call = { target: recipient as Hex, value: amount, callData: '0x' as Hex }
+    const calls = [{ target: recipient as Hex, value: amount, callData: '0x' as Hex } ]
 
     const key = BigInt(pad(ownableModule as Hex, {
         dir: "right",
@@ -78,7 +71,7 @@ export const sendTransaction = async (chainId: string, recipient: string, amount
 
     let unsignedUserOp = buildUnsignedUserOpTransaction(
         safeAccount as Hex,
-        call,
+        calls,
         nonce,
       )
 
@@ -93,7 +86,6 @@ export const sendTransaction = async (chainId: string, recipient: string, amount
         )
         let typedDataHash = getBytes(await entryPoint.getUserOpHash(getPackedUserOperation(userOperation)))
         return await walletProvider.signMessage(typedDataHash) as `0x${string}`
-    
     }
 
     const userOperationHash = await sendUserOperation(chainId, unsignedUserOp, signUserOperation )
@@ -112,7 +104,7 @@ const buildInitSafe7579 = async ( ): Promise<BaseTransaction> => {
     const chainId = (await provider.getNetwork()).chainId.toString()
     const bProvider = await getJsonRpcProvider(chainId)
 
-    const safeValidator = new Contract(
+    const safe7579 = new Contract(
         safe7579Module,
         Safe7579.abi,
         bProvider
@@ -121,39 +113,90 @@ const buildInitSafe7579 = async ( ): Promise<BaseTransaction> => {
     return {
         to: safe7579Module,
         value: "0",
-        data: (await safeValidator.initializeAccount.populateTransaction([], [], [], [], {registry: ZeroAddress, attesters: [], threshold: 0})).data
+        data: (await safe7579.initializeAccount.populateTransaction([], [], [], [], {registry: ZeroAddress, attesters: [], threshold: 0})).data
     }
 }
 
 
-const buildInstallOwnable = async ( address: string ): Promise<BaseTransaction> => {
 
-    
-    const info = await getSafeInfo()
+
+const buildInstallModule = async (address: Address, type: ModuleType, initData: Hex): Promise<BaseTransaction> => {
 
     const provider = await getProvider()
+    const safeInfo = await getSafeInfo()
+    
     // Updating the provider RPC if it's from the Safe App.
     const chainId = (await provider.getNetwork()).chainId.toString()
-    const bProvider = await getJsonRpcProvider(chainId)
 
-    const safeValidator = new Contract(
-        safe7579Module,
-        Safe7579.abi,
-        bProvider
-    )
+    const client = getClient({ rpcUrl: NetworkUtil.getNetworkById(parseInt(chainId))?.url!});
 
-    return {
-        to: info.safeAddress,
-        value: "0",
-        data: (await safeValidator.installModule.populateTransaction(1, await ownableModule, utils.defaultAbiCoder.encode(['address'], [address]))).data
-    }
+    // Create the account object
+    const account = getAccount({
+            address: safe7579Module,
+            type: "safe",
+        });
+
+
+
+    const module = getModule({
+        module: address,
+        data: initData,
+        type:  type ,
+      });
+
+    const executions = await installModule({
+        client,
+        account,
+        module,
+      });
+
+
+      return {to: safeInfo.safeAddress , value: executions[0].value.toString() , data: executions[0].callData}
+
 }
 
+
+const isInstalled = async (address: Address, type: ModuleType): Promise<boolean> => {
+
+    const provider = await getProvider()
+    const safeInfo = await getSafeInfo()
+    
+    // Updating the provider RPC if it's from the Safe App.
+    const chainId = (await provider.getNetwork()).chainId.toString()
+
+    const client = getClient({ rpcUrl: NetworkUtil.getNetworkById(parseInt(chainId))?.url!});
+
+
+    // Create the account object
+    const account = getAccount({
+            address: safeInfo.safeAddress as Hex,
+            type: "safe",
+        });
+
+
+    const module = getModule({
+        module: address,
+        data: '0x',
+        type:  type ,
+      });
+
+     
+    try {  
+    return await isModuleInstalled({
+        client,
+        account,
+        module,
+      });
+    }
+    catch {
+        return false;
+    }
+
+}
 
 
 
 export const addValidatorModule = async (ownerAddress: string ) => {
-
     
     if (!await isConnectedToSafe()) throw Error("Not connected to a Safe")
 
@@ -161,19 +204,16 @@ export const addValidatorModule = async (ownerAddress: string ) => {
 
     const txs: BaseTransaction[] = []
 
-
     if (!await isModuleEnabled(info.safeAddress, safe7579Module)) {
         txs.push(await buildEnableModule(info.safeAddress, safe7579Module))
         txs.push(await buildUpdateFallbackHandler(info.safeAddress, safe7579Module))
+        txs.push(await buildInitSafe7579())
+        txs.push(await buildInstallModule(ownableModule, 'validator', utils.defaultAbiCoder.encode(['address'], [ownerAddress]) as Hex))
     }
+    else if(!await isInstalled(ownableModule, 'validator')) {
+        txs.push(await buildInstallModule(ownableModule, 'validator', utils.defaultAbiCoder.encode(['address'], [ownerAddress]) as Hex))
 
-    txs.push(await buildInitSafe7579())
-
-    txs.push(await buildInstallOwnable(ownerAddress))
-
-    const provider = await getProvider()
-    // Updating the provider RPC if it's from the Safe App.
-    const chainId = (await provider.getNetwork()).chainId.toString()
+    }
 
     if (txs.length > 0)  
     await submitTxs(txs)
