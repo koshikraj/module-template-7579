@@ -64,7 +64,7 @@ describe('Safe7579 - Basic tests', () => {
 
 
     it('should add a ownable validator and execute ops with signatures', async () => {
-      const { user1, safe, ownableValidator, safe7579, entryPoint, relayer } = await setupTests()
+      const { user1, user2, safe, ownableValidator, safe7579, entryPoint, relayer } = await setupTests()
 
       await entryPoint.depositTo(await safe.getAddress(), { value: ethers.parseEther('1.0') })
 
@@ -74,7 +74,7 @@ describe('Safe7579 - Basic tests', () => {
 
       await execSafeTransaction(safe, await safe7579.initializeAccount.populateTransaction([], [], [], [], {registry: ZeroAddress, attesters: [], threshold: 0}));
 
-      await execSafeTransaction(safe, {to: await safe.getAddress(), data:  ((await safe7579.installModule.populateTransaction(1, await ownableValidator.getAddress(), utils.defaultAbiCoder.encode(['address'], [user1.address]))).data as string), value: 0})
+      await execSafeTransaction(safe, {to: await safe.getAddress(), data:  ((await safe7579.installModule.populateTransaction(1, await ownableValidator.getAddress(), utils.defaultAbiCoder.encode(['uint256', 'address[]'], [1, [user1.address]]))).data as string), value: 0})
 
       const key = BigInt(pad(await ownableValidator.getAddress() as Hex, {
           dir: "right",
@@ -111,7 +111,7 @@ describe('Safe7579 - Basic tests', () => {
 
       await execSafeTransaction(safe, await safe7579.initializeAccount.populateTransaction([], [], [], [], {registry: ZeroAddress, attesters: [], threshold: 0}));
 
-      await execSafeTransaction(safe, {to: await safe.getAddress(), data:  ((await safe7579.installModule.populateTransaction(1, await ownableValidator.getAddress(), utils.defaultAbiCoder.encode(['address'], [user1.address]))).data as string), value: 0})
+      await execSafeTransaction(safe, {to: await safe.getAddress(), data:  ((await safe7579.installModule.populateTransaction(1, await ownableValidator.getAddress(), utils.defaultAbiCoder.encode(['uint256', 'address[]'], [1, [user1.address]]))).data as string), value: 0})
       const key = BigInt(pad(await ownableValidator.getAddress() as Hex, {
           dir: "right",
           size: 24,

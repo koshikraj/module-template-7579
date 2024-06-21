@@ -18,13 +18,16 @@ import {
     installModule,
     isModuleInstalled,
     getInstalledModules,
-    ModuleType
+    getInstallOwnableValidator,
+    ModuleType,
+    OWNABLE_VALIDATOR_ADDRESS
   } from "@rhinestone/module-sdk";
 import { NetworkUtil } from "./networks";
    
 
 const safe7579Module = "0x94952C0Ea317E9b8Bca613490AF25f6185623284"
 const ownableModule = "0xe90044FE8855B307Fe8F9848fd9558D5D3479191"
+
 export function generateRandomString(length: number) {
     const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
     let result = '';
@@ -57,7 +60,7 @@ export const sendTransaction = async (chainId: string, recipient: string, amount
 
     const calls = [{ target: recipient as Hex, value: amount, callData: '0x' as Hex } ]
 
-    const key = BigInt(pad(ownableModule as Hex, {
+    const key = BigInt(pad(OWNABLE_VALIDATOR_ADDRESS as Hex, {
         dir: "right",
         size: 24,
       }) || 0
@@ -155,6 +158,38 @@ const buildInstallModule = async (address: Address, type: ModuleType, initData: 
 
 }
 
+const buildOwnableInstallModule = async (owners: Address[], threshold: number): Promise<BaseTransaction> => {
+
+    const provider = await getProvider()
+    const safeInfo = await getSafeInfo()
+    
+    // Updating the provider RPC if it's from the Safe App.
+    const chainId = (await provider.getNetwork()).chainId.toString()
+
+    const client = getClient({ rpcUrl: NetworkUtil.getNetworkById(parseInt(chainId))?.url!});
+
+    // Create the account object
+    const account = getAccount({
+            address: safe7579Module,
+            type: "safe",
+        });
+
+    const ownableValidator = getInstallOwnableValidator({
+        owners: owners, 
+        threshold: threshold, // owners threshold
+      });
+
+    const executions = await installModule({
+        client,
+        account,
+        module: ownableValidator,
+      });
+
+
+      return { to: safeInfo.safeAddress , value: executions[0].value.toString() , data: executions[0].callData }
+
+}
+
 
 const isInstalled = async (address: Address, type: ModuleType): Promise<boolean> => {
 
@@ -196,7 +231,7 @@ const isInstalled = async (address: Address, type: ModuleType): Promise<boolean>
 
 
 
-export const addValidatorModule = async (ownerAddress: string ) => {
+export const addValidatorModule = async (ownerAddress: Hex ) => {
     
     if (!await isConnectedToSafe()) throw Error("Not connected to a Safe")
 
@@ -204,14 +239,17 @@ export const addValidatorModule = async (ownerAddress: string ) => {
 
     const txs: BaseTransaction[] = []
 
+
+
     if (!await isModuleEnabled(info.safeAddress, safe7579Module)) {
         txs.push(await buildEnableModule(info.safeAddress, safe7579Module))
         txs.push(await buildUpdateFallbackHandler(info.safeAddress, safe7579Module))
         txs.push(await buildInitSafe7579())
-        txs.push(await buildInstallModule(ownableModule, 'validator', utils.defaultAbiCoder.encode(['address'], [ownerAddress]) as Hex))
+ 
+        txs.push(await buildOwnableInstallModule([ownerAddress], 1))
     }
-    else if(!await isInstalled(ownableModule, 'validator')) {
-        txs.push(await buildInstallModule(ownableModule, 'validator', utils.defaultAbiCoder.encode(['address'], [ownerAddress]) as Hex))
+    else if(!await isInstalled(OWNABLE_VALIDATOR_ADDRESS, 'validator')) {
+        txs.push(await buildOwnableInstallModule([ownerAddress], 1))
 
     }
 

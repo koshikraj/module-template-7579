@@ -39,6 +39,7 @@
   "devDependencies": {
     "@account-abstraction/contracts": "^0.7.0",
     "@ERC4337/account-abstraction": "github:kopy-kat/account-abstraction#develop",
+    "@rhinestone/checknsignatures": "github:rhinestonewtf/checknsignatures",
     "@nomicfoundation/hardhat-chai-matchers": "^2.0.6",
     "@nomicfoundation/hardhat-ethers": "^3.0.5",
     "@nomicfoundation/hardhat-foundry": "^1.1.1",
