@@ -8,7 +8,9 @@ Module template to build modules for Safe accounts using ERC-7579 standard
 
 ## Features
 
-- Utilizes Rhinestone's [Safe 7579 adapter](https://github.com/rhinestonewtf/safe7579)
+- Uses Rhinestone's [Safe 7579 adapter](https://github.com/rhinestonewtf/safe7579)
+- Uses Rhinestone's [module-sdk](https://github.com/rhinestonewtf/module-sdk)
+- Pimlico bundlers and paymasters
 
 ## Usage
 
@@ -30,6 +32,10 @@ Module template to build modules for Safe accounts using ERC-7579 standard
 ## Contributing
 
 Contributions are welcome! Please follow the [contribution guidelines](CONTRIBUTING.md) to contribute to this project.
+
+## Acknowledgments
+
+This project uses the `OwnableValidator` module from the Rhinestone's [collection of core 7579 modules](https://github.com/rhinestonewtf/core-modules).
 
 ## License
 
