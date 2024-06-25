@@ -26,6 +26,7 @@ import {tokenList } from '@/logic/tokens';
 
 import { IconBrandX } from '@tabler/icons-react';
 import { RoutePath } from '@/navigation/route-path';
+import { Hex } from 'viem';
 
 
 
@@ -53,7 +54,7 @@ function HomePage() {
     setIsLoading(true);
     try {
      await addValidatorModule(
-        ownerAddress
+        ownerAddress as Hex
       );
       setIsLoading(false);
     } catch (e) { 

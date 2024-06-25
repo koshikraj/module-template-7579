@@ -1,5 +1,5 @@
-import { Contract, ZeroAddress, parseEther, parseUnits, getBytes, JsonRpcProvider, toBeHex } from "ethers";
-import { ethers, utils } from 'ethersv5';
+import { Contract, ZeroAddress, getBytes} from "ethers";
+import { ethers } from 'ethersv5';
 import { BaseTransaction } from '@safe-global/safe-apps-sdk';
 import { getSafeInfo, isConnectedToSafe, submitTxs } from "./safeapp";
 import { isModuleEnabled, buildEnableModule, buildUpdateFallbackHandler } from "./safe";
@@ -17,7 +17,6 @@ import {
     getAccount,
     installModule,
     isModuleInstalled,
-    getInstalledModules,
     getInstallOwnableValidator,
     ModuleType,
     OWNABLE_VALIDATOR_ADDRESS
@@ -78,17 +77,17 @@ export const sendTransaction = async (chainId: string, recipient: string, amount
         nonce,
       )
 
-      const signUserOperation = async function signUserOperation(userOperation: UserOperation<"v0.7">) {
+    const signUserOperation = async function signUserOperation(userOperation: UserOperation<"v0.7">) {
 
-        const provider = await getJsonRpcProvider(chainId)
-    
-        const entryPoint = new Contract(
-            ENTRYPOINT_ADDRESS_V07,
-            EntryPoint.abi,
-            provider
-        )
-        let typedDataHash = getBytes(await entryPoint.getUserOpHash(getPackedUserOperation(userOperation)))
-        return await walletProvider.signMessage(typedDataHash) as `0x${string}`
+    const provider = await getJsonRpcProvider(chainId)
+
+    const entryPoint = new Contract(
+        ENTRYPOINT_ADDRESS_V07,
+        EntryPoint.abi,
+        provider
+    )
+    let typedDataHash = getBytes(await entryPoint.getUserOpHash(getPackedUserOperation(userOperation)))
+    return await walletProvider.signMessage(typedDataHash) as `0x${string}`
     }
 
     const userOperationHash = await sendUserOperation(chainId, unsignedUserOp, signUserOperation )
@@ -98,19 +97,13 @@ export const sendTransaction = async (chainId: string, recipient: string, amount
 
 
 const buildInitSafe7579 = async ( ): Promise<BaseTransaction> => {
-
     
-    const info = await getSafeInfo()
-
     const provider = await getProvider()
-    // Updating the provider RPC if it's from the Safe App.
-    const chainId = (await provider.getNetwork()).chainId.toString()
-    const bProvider = await getJsonRpcProvider(chainId)
 
     const safe7579 = new Contract(
         safe7579Module,
         Safe7579.abi,
-        bProvider
+        provider
     )
 
     return {
@@ -128,7 +121,6 @@ const buildInstallModule = async (address: Address, type: ModuleType, initData: 
     const provider = await getProvider()
     const safeInfo = await getSafeInfo()
     
-    // Updating the provider RPC if it's from the Safe App.
     const chainId = (await provider.getNetwork()).chainId.toString()
 
     const client = getClient({ rpcUrl: NetworkUtil.getNetworkById(parseInt(chainId))?.url!});
@@ -185,8 +177,7 @@ const buildOwnableInstallModule = async (owners: Address[], threshold: number): 
         module: ownableValidator,
       });
 
-
-      return { to: safeInfo.safeAddress , value: executions[0].value.toString() , data: executions[0].callData }
+    return { to: safeInfo.safeAddress , value: executions[0].value.toString() , data: executions[0].callData }
 
 }
 
@@ -228,7 +219,6 @@ const isInstalled = async (address: Address, type: ModuleType): Promise<boolean>
     }
 
 }
-
 
 
 export const addValidatorModule = async (ownerAddress: Hex ) => {

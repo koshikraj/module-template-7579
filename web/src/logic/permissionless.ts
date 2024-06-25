@@ -20,7 +20,6 @@ export const getChain = (chainId: string) : Chain => {
 export const sendUserOperation = async (chainId: string, unsignedUserOp: UserOperation<"v0.7">, userOpSigner: any ) => {
 
   const chain = getChain(chainId);
-    console.log('insider', chainId, chain )
 
   const pimlicoEndpoint = `https://api.pimlico.io/v2/${chain.name.toLowerCase().replace(/\s+/g, '-')}/rpc?apikey=${import.meta.env.VITE_PIMLICO_API_KEY}`;
 
@@ -52,7 +51,6 @@ export const sendUserOperation = async (chainId: string, unsignedUserOp: UserOpe
   };
 
 
-
   sponsoredUserOperation.signature  = await userOpSigner(sponsoredUserOperation)
 
   const userOperationHash = await pimlicoBundlerClient.sendUserOperation({
@@ -69,14 +67,12 @@ export const waitForExecution = async (chainId: string, userOperationHash: strin
 
   const pimlicoEndpoint = `https://api.pimlico.io/v2/${chain.name.toLowerCase().replace(/\s+/g, '-')}/rpc?apikey=${import.meta.env.VITE_PIMLICO_API_KEY}`;
 
-
   const pimlicoBundlerClient = createPimlicoBundlerClient({ 
     transport: http(pimlicoEndpoint),
     entryPoint: ENTRYPOINT_ADDRESS_V07
   });
 
-
-  const receipt = await pimlicoBundlerClient.waitForUserOperationReceipt({ hash: userOperationHash as Hex })
+  const receipt = await pimlicoBundlerClient.waitForUserOperationReceipt({ hash: userOperationHash as Hex, timeout: 60000})
 
   return receipt;
 
