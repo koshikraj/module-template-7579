@@ -84,8 +84,6 @@ export const getSmartAccountClient = async (chainId: string, address: Hex, nonce
 
   account.signUserOperation = signUserOperation ?? signUserOperation
 
-  console.log(await account.getNonce())
-
   const pimlicoBundlerClient = await getBundlerClient(chainId)
   const paymasterClient = await getPaymasterClient(chainId)
   const smartAccountClient = createSmartAccountClient({

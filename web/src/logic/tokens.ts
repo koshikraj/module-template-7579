@@ -7,7 +7,7 @@ import USDT from '../assets/icons/usdt.svg';
 
 
 export const badgeIcons = [
-    { ids: ['84531', '8453'], img: Base },
+    { ids: ['84532', '8453'], img: Base },
     { ids: ['11155111', '5', '1'], img: ETH },
     { ids: ['100'], img: 'https://app.safe.global/images/networks/gno.png' },
     { ids: ['42220'], img: Celo },
@@ -110,36 +110,21 @@ export const tokenList: any = {
       },                                                                                                    
 
   ],
-  84531: [
+  84532: [
     {
         value: '0x0000000000000000000000000000000000000000',
         label: 'ETH',
         image: ETH,
         description: 'Ether currency',
-      },                                                                                                    
+      },    
+      
+      {
+        value: '0xC432004323f06ca58362A5EFd993A368c93d032b',
+        label: 'OST',
+        image: Base,
+        description: 'Onchain Summer Token',
+      },     
 
-  ],
-  5: [
-    {
-        value: '0x0000000000000000000000000000000000000000',
-        label: 'ETH',
-        image: ETH,
-        description: 'Ether currency',
-      },
-    {
-      value: '0xb682DB693751b65430138aec47E09435D391f781',
-      label: 'SUSD',
-      image:
-        'https://cdn.jsdelivr.net/gh/atomiclabs/cryptocurrency-icons@1a63530be6e374711a8554f31b17e4cb92c25fa5/svg/color/usd.svg',
-      description: 'USD token for test',
-    },
-    {
-      value: '0x11fe4b6ae13d2a6055c8d9cf65c55bac32b5d844',
-      label: 'DAI',
-      image:
-        'https://cdn.jsdelivr.net/gh/atomiclabs/cryptocurrency-icons@1a63530be6e374711a8554f31b17e4cb92c25fa5/svg/color/dai.svg',
-      description: 'DAI stablecoin',
-    },
   ],
 
 

@@ -7,9 +7,9 @@ const accountAddress = "";
 export enum Network {
   localhost = "localhost",
   mainnet = "mainnet",
-  goerli = "goerli",
   polygontestnet = "polygontestnet",
   base = "base",
+  basesepolia = "basesepolia",
   polygon = "polygon",
   gnosis = "gnosis",
 }
@@ -35,16 +35,6 @@ export const networks = {
     api: `https://api.etherscan.io/api?apikey=${ETHERSCAN_API_KEY}`,
     easExplorer: "",
   },
-  goerli: {
-    name: 'Goerli',
-    type: 'testnet',
-    chainId: 5,
-    url: `https://goerli.infura.io/v3/${INFURA_API_KEY}`,
-    safeService: "https://safe-transaction-goerli.safe.global",
-    blockExplorer: "https://goerli.etherscan.io",
-    api: `https://api-goerli.etherscan.io/api?apikey=${ETHERSCAN_API_KEY}`,
-    easExplorer: "",
-  },
   sepolia: {
     name: 'Sepolia',
     type: 'testnet',
@@ -55,15 +45,15 @@ export const networks = {
     api: `https://api-sepolia.etherscan.io/api?apikey=${ETHERSCAN_API_KEY}`,
     easExplorer: "",
   },
-  basegoerli: {
-    name: 'Base Goerli',
+  basesepolia: {
+    name: 'Base Sepolia',
     type: 'testnet',
-    chainId: 84531,
-    url: `https://base-goerli.g.alchemy.com/v2/K1GZzIiF6-PthdjPtfzvTOMcej2zOWWA`,
-    blockExplorer: "https://goerli.basescan.org",
-    safeService: "https://safe-transaction-base-testnet.safe.global",
-    api: `https://api-goerli.etherscan.io/api?apikey=${ETHERSCAN_API_KEY}`,
-    easExplorer: "https://base-goerli.easscan.org/attestation/view/",
+    chainId: 84532,
+    url: `https://base-sepolia.g.alchemy.com/v2/wRVILABVfp0WrfAv449B23mIW_SJqOwL`,
+    blockExplorer: "https://sepolia.basescan.org",
+    safeService: "https://safe-transaction-base-sepolia.safe.global",
+    api: `https://api-sepolia.etherscan.io/api?apikey=${ETHERSCAN_API_KEY}`,
+    easExplorer: "https://base-sepolia.easscan.org/attestation/view/",
   },
 
   base: {

@@ -1,11 +1,11 @@
-import { Text, ActionIcon, Alert, Anchor, Avatar, Badge, Button, CopyButton, Divider, Input, Modal, Paper, rem, Tooltip, InputBase, Combobox, useCombobox, Group, TextInput, Skeleton } from '@mantine/core';
+import { Text, ActionIcon, Alert, Anchor, Avatar, Badge, Button, CopyButton, Divider, Input, Modal, Paper, rem, Tooltip, InputBase, Combobox, useCombobox, Group, Notification, Skeleton } from '@mantine/core';
 import classes from './account.module.css';
 import { useEffect, useState } from 'react';
 import useLinkStore from '@/store/link/link.store';
 import { ethers, formatEther, parseEther, parseUnits, Wallet, ZeroAddress } from 'ethers';
 import { buildTransferToken, getTokenBalance, getTokenDecimals } from '@/logic/utils';
 import { useDisclosure } from '@mantine/hooks';
-import { IconCheck, IconChevronDown, IconCoin, IconConfetti, IconCopy } from '@tabler/icons';
+import { IconCheck, IconChevronDown, IconCoin, IconConfetti, IconCopy, IconX } from '@tabler/icons';
 import { NetworkUtil } from '@/logic/networks';
 import { getIconForId, getTokenInfo, getTokenList, tokenList } from '@/logic/tokens';
 import { getJsonRpcProvider } from '@/logic/web3';
@@ -24,19 +24,19 @@ import { Hex, PrivateKeyAccount } from 'viem';
 export const AccountPage = () => {
 
   
-  const { claimDetails, accountDetails, setAccountDetails, setConfirming, confirming} = useLinkStore((state: any) => state);
+  const { claimDetails, accountDetails, setAccountDetails, setConfirming, chainId, setChainId } = useLinkStore((state: any) => state);
   const [ balance, setBalance ] = useState<any>(0);
   const [opened, { open, close }] = useDisclosure(false);
   const [sendModal, setSendModal] = useState(false);
   const [tokenValue, setTokenValue] = useState(0);
   const [sendAddress, setSendAddress] = useState('');
   const [sendSuccess, setSendSuccess] = useState(false);
+  const [ error, setError ] = useState(false);
   const [balanceLoading, setBalanceLoading] = useState(false);
   const [sendLoader, setSendLoader] = useState(false);
   const [safeAccount, setSafeAccount] = useState<Hex>(loadAccountInfo().account);
   const [ authenticating, setAuthenticating ] = useState(false);
   const [dimensions, setDimensions] = useState({ width: window.innerWidth, height: window.innerHeight });
-  const [chainId, setChainId] = useState<number>(claimDetails.chainId);
   const [value, setValue] = useState<string>("0x0000000000000000000000000000000000000000");
   const [walletProvider, setWalletProvider] = useState<PrivateKeyAccount>();
 
@@ -143,6 +143,8 @@ export const AccountPage = () => {
 
   async function sendAsset() {
 
+    setError(false);
+    setSendSuccess(false);
     setSendLoader(true);
     try {
 
@@ -162,7 +164,6 @@ export const AccountPage = () => {
     setSendSuccess(false);
     else {
     setSendSuccess(true);
-    setSendModal(false);
     setConfirming(true);
     // await waitForExecution(chainId.toString(), result);
     setConfirming(false);
@@ -172,6 +173,7 @@ export const AccountPage = () => {
     
   } catch(e) {
     console.log('error', e)
+    setError(true);
     setSendLoader(false);  
   }  
   setSendLoader(false);
@@ -219,7 +221,7 @@ export const AccountPage = () => {
       window.addEventListener('resize', () => setDimensions({ width: window.innerWidth, height: window.innerHeight }));
       
     })();
-  }, [ safeAccount, accountDetails.address, chainId, sendSuccess, value, confirming]);
+  }, [ safeAccount, accountDetails.address, chainId, sendSuccess, value, sendLoader]);
 
 
   
@@ -469,20 +471,34 @@ export const AccountPage = () => {
               style={{marginBottom: '20px'}}
               fullWidth
               color="green"
-              className={classes.btn}
+              className={!sendLoader ? classes.btn : ""}
               onClick={async () => 
                 await sendAsset()}
               loaderProps={{ color: 'white', type: 'dots', size: 'md' }}
-              loading={sendLoader}
+              disabled= {sendLoader}
+              // loading={sendLoader}
             >
               Send Now
             </Button>
 
 
-      { sendSuccess && <Alert variant="light" color="lime" radius="md" title="Transfer Successful" icon={<IconConfetti/>}>
-      Your crypto assets have safely landed in the Success Galaxy. Buckle up for a stellar financial journey! 🚀💰
-    </Alert>
+    { sendSuccess && <Notification withBorder radius='md' withCloseButton={false}  icon={<IconCheck style={{ width: rem(20), height: rem(20) }} />} color="teal" title="Transfer Successful!" mt="md">
+    Your crypto assets have safely landed in the Success Galaxy. Buckle up for a stellar financial journey! 🚀💰
+      </Notification>
       }
+
+    
+    { sendLoader && <Notification withBorder radius='md' loading={sendLoader} withCloseButton={false}  icon={<IconCheck style={{ width: rem(20), height: rem(20) }} />} color="teal" title="Waiting to confirm" mt="md">
+       The transaction have been sent. Wait for the transacion to get confirmed ⌛️
+      </Notification>
+      }
+
+
+
+    { error && <Notification withBorder radius='md' withCloseButton={false}  icon={<IconX style={{ width: rem(20), height: rem(20) }} />}  color="red" title="Transaction Error!" mt="md">
+    Oops! Gremlins have invaded your transaction. Please try again later.
+      </Notification>
+    }
             
     </div>
   
