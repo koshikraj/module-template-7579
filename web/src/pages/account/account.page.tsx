@@ -15,6 +15,8 @@ import { loadAccountInfo, storeAccountInfo } from '@/utils/storage';
 
 import Key from '../../assets/icons/key.svg';
 import { waitForExecution } from '@/logic/permissionless';
+import { privateKeyToAccount } from 'viem/accounts';
+import { Hex, PrivateKeyAccount } from 'viem';
 
 
 
@@ -31,12 +33,12 @@ export const AccountPage = () => {
   const [sendSuccess, setSendSuccess] = useState(false);
   const [balanceLoading, setBalanceLoading] = useState(false);
   const [sendLoader, setSendLoader] = useState(false);
-  const [safeAccount, setSafeAccount] = useState<string>(loadAccountInfo().account);
+  const [safeAccount, setSafeAccount] = useState<Hex>(loadAccountInfo().account);
   const [ authenticating, setAuthenticating ] = useState(false);
   const [dimensions, setDimensions] = useState({ width: window.innerWidth, height: window.innerHeight });
   const [chainId, setChainId] = useState<number>(claimDetails.chainId);
   const [value, setValue] = useState<string>("0x0000000000000000000000000000000000000000");
-  const [walletProvider, setWalletProvider] = useState<Wallet>();
+  const [walletProvider, setWalletProvider] = useState<PrivateKeyAccount>();
 
   
 
@@ -155,14 +157,14 @@ export const AccountPage = () => {
             parseAmount = 0n;
             toAddress = value;
         }
-    const result = await sendTransaction(chainId.toString(), toAddress, parseAmount, walletProvider, safeAccount)
+    const result = await sendTransaction(chainId.toString(), toAddress, parseAmount, walletProvider!, safeAccount)
     if (!result)
     setSendSuccess(false);
     else {
     setSendSuccess(true);
     setSendModal(false);
     setConfirming(true);
-    await waitForExecution(chainId.toString(), result);
+    // await waitForExecution(chainId.toString(), result);
     setConfirming(false);
 
     }
@@ -198,7 +200,7 @@ export const AccountPage = () => {
       }
       storeAccountInfo(safeAccount, address, privateKey);
       setAccountDetails({ account: safeAccount, address, privateKey })
-      setWalletProvider(new ethers.Wallet(privateKey))
+      setWalletProvider(privateKeyToAccount(privateKey))
 
       if(!accountDetails.account) {
         open();

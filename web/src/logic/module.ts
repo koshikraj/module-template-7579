@@ -6,11 +6,8 @@ import { isModuleEnabled, buildEnableModule, buildUpdateFallbackHandler } from "
 import { getJsonRpcProvider, getProvider } from "./web3";
 import Safe7579 from "./Safe7579.json"
 import EntryPoint from "./EntryPoint.json"
-import {  publicClient } from "./utils";
-import {  buildUnsignedUserOpTransaction } from "@/utils/userOp";
-import {  Address, Hex, pad } from "viem";
+import {  Address, Hex, PrivateKeyAccount, pad, toBytes } from "viem";
 import { ENTRYPOINT_ADDRESS_V07, getPackedUserOperation, UserOperation, getAccountNonce } from 'permissionless'
-import { sendUserOperation } from "./permissionless";
 import {
     getClient,
     getModule,
@@ -22,6 +19,8 @@ import {
     OWNABLE_VALIDATOR_ADDRESS
   } from "@rhinestone/module-sdk";
 import { NetworkUtil } from "./networks";
+import { getSmartAccountClient } from "./permissionless";
+import { signMessage } from "viem/accounts";
    
 
 const safe7579Module = "0x94952C0Ea317E9b8Bca613490AF25f6185623284"
@@ -55,27 +54,16 @@ export function generateKeysFromString(string: string) {
 
 
 
-export const sendTransaction = async (chainId: string, recipient: string, amount: bigint, walletProvider: any, safeAccount: string): Promise<any> => {
 
-    const calls = [{ target: recipient as Hex, value: amount, callData: '0x' as Hex } ]
+export const sendTransaction = async (chainId: string, recipient: string, amount: bigint, walletProvider: PrivateKeyAccount, safeAccount: Hex): Promise<any> => {
+
+    const call = { to: recipient as Hex, value: amount, data: '0x' as Hex }
 
     const key = BigInt(pad(OWNABLE_VALIDATOR_ADDRESS as Hex, {
         dir: "right",
         size: 24,
       }) || 0
     )
-    
-    const nonce = await getAccountNonce(publicClient(parseInt(chainId)), {
-        sender: safeAccount as Hex,
-        entryPoint: ENTRYPOINT_ADDRESS_V07,
-        key: key
-    })
-
-    let unsignedUserOp = buildUnsignedUserOpTransaction(
-        safeAccount as Hex,
-        calls,
-        nonce,
-      )
 
     const signUserOperation = async function signUserOperation(userOperation: UserOperation<"v0.7">) {
 
@@ -86,13 +74,15 @@ export const sendTransaction = async (chainId: string, recipient: string, amount
         EntryPoint.abi,
         provider
     )
+
     let typedDataHash = getBytes(await entryPoint.getUserOpHash(getPackedUserOperation(userOperation)))
-    return await walletProvider.signMessage(typedDataHash) as `0x${string}`
+
+    return await walletProvider.signMessage({ message:  { raw: typedDataHash}}) 
     }
 
-    const userOperationHash = await sendUserOperation(chainId, unsignedUserOp, signUserOperation )
+    const smartAccount = await getSmartAccountClient(chainId, safeAccount, key, walletProvider, signUserOperation)
 
-    return userOperationHash;
+    return await smartAccount.sendTransaction(call);
 }
 
 
