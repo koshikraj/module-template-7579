@@ -27,6 +27,7 @@ import {tokenList } from '@/logic/tokens';
 import { IconBrandX } from '@tabler/icons-react';
 import { RoutePath } from '@/navigation/route-path';
 import { Hex } from 'viem';
+import useLinkStore from '@/store/link/link.store';
 
 
 
@@ -38,9 +39,11 @@ function HomePage() {
 
   const dark = colorScheme === 'dark';
 
+  const { chainId, setChainId } = useLinkStore((state: any) => state);
+
+
   const [ownerAddress, setOwnerAddress] = useState<string>("");
   const [network, setNetwork] = useState('');
-  const [chainId, setChainId] = useState(5);
 
   const [ownerAdded, setOwnerAdded] = useState(false);
   const [isLoading, setIsLoading] = useState(false);

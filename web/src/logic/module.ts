@@ -6,11 +6,8 @@ import { isModuleEnabled, buildEnableModule, buildUpdateFallbackHandler } from "
 import { getJsonRpcProvider, getProvider } from "./web3";
 import Safe7579 from "./Safe7579.json"
 import EntryPoint from "./EntryPoint.json"
-import {  publicClient } from "./utils";
-import {  buildUnsignedUserOpTransaction } from "@/utils/userOp";
-import {  Address, Hex, pad } from "viem";
+import {  Address, Hex, PrivateKeyAccount, encodeAbiParameters, pad, toBytes } from "viem";
 import { ENTRYPOINT_ADDRESS_V07, getPackedUserOperation, UserOperation, getAccountNonce } from 'permissionless'
-import { sendUserOperation } from "./permissionless";
 import {
     getClient,
     getModule,
@@ -22,10 +19,13 @@ import {
     OWNABLE_VALIDATOR_ADDRESS
   } from "@rhinestone/module-sdk";
 import { NetworkUtil } from "./networks";
+import { getSmartAccountClient } from "./permissionless";
+import { signMessage } from "viem/accounts";
+import { buildUnsignedUserOpTransaction } from "@/utils/userOp";
    
 
-const safe7579Module = "0x94952C0Ea317E9b8Bca613490AF25f6185623284"
-const ownableModule = "0xe90044FE8855B307Fe8F9848fd9558D5D3479191"
+const safe7579Module = "0x3Fdb5BC686e861480ef99A6E3FaAe03c0b9F32e2"
+const ownableModule = "0xeA1C45a77bCcD401388553033A994d7F296db3CE"
 
 export function generateRandomString(length: number) {
     const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
@@ -55,27 +55,17 @@ export function generateKeysFromString(string: string) {
 
 
 
-export const sendTransaction = async (chainId: string, recipient: string, amount: bigint, walletProvider: any, safeAccount: string): Promise<any> => {
 
-    const calls = [{ target: recipient as Hex, value: amount, callData: '0x' as Hex } ]
+export const sendTransaction = async (chainId: string, recipient: string, amount: bigint, walletProvider: PrivateKeyAccount, safeAccount: Hex): Promise<any> => {
 
-    const key = BigInt(pad(OWNABLE_VALIDATOR_ADDRESS as Hex, {
+    const call = { to: recipient as Hex, value: amount, data: '0x' as Hex }
+
+
+    const key = BigInt(pad(ownableModule as Hex, {
         dir: "right",
         size: 24,
       }) || 0
     )
-    
-    const nonce = await getAccountNonce(publicClient(parseInt(chainId)), {
-        sender: safeAccount as Hex,
-        entryPoint: ENTRYPOINT_ADDRESS_V07,
-        key: key
-    })
-
-    let unsignedUserOp = buildUnsignedUserOpTransaction(
-        safeAccount as Hex,
-        calls,
-        nonce,
-      )
 
     const signUserOperation = async function signUserOperation(userOperation: UserOperation<"v0.7">) {
 
@@ -86,19 +76,23 @@ export const sendTransaction = async (chainId: string, recipient: string, amount
         EntryPoint.abi,
         provider
     )
+    
     let typedDataHash = getBytes(await entryPoint.getUserOpHash(getPackedUserOperation(userOperation)))
-    return await walletProvider.signMessage(typedDataHash) as `0x${string}`
+
+    return await walletProvider.signMessage({ message:  { raw: typedDataHash}}) 
     }
 
-    const userOperationHash = await sendUserOperation(chainId, unsignedUserOp, signUserOperation )
+    const smartAccount = await getSmartAccountClient(chainId, safeAccount, key, walletProvider, signUserOperation)
 
-    return userOperationHash;
+
+    return await smartAccount.sendTransaction(call);
 }
 
 
 const buildInitSafe7579 = async ( ): Promise<BaseTransaction> => {
     
     const provider = await getProvider()
+    const safeInfo = await getSafeInfo()
 
     const safe7579 = new Contract(
         safe7579Module,
@@ -107,7 +101,7 @@ const buildInitSafe7579 = async ( ): Promise<BaseTransaction> => {
     )
 
     return {
-        to: safe7579Module,
+        to: safeInfo.safeAddress,
         value: "0",
         data: (await safe7579.initializeAccount.populateTransaction([], [], [], [], {registry: ZeroAddress, attesters: [], threshold: 0})).data
     }
@@ -132,11 +126,10 @@ const buildInstallModule = async (address: Address, type: ModuleType, initData: 
         });
 
 
-
     const module = getModule({
         module: address,
         data: initData,
-        type:  type ,
+        type:  type,
       });
 
     const executions = await installModule({
@@ -229,17 +222,30 @@ export const addValidatorModule = async (ownerAddress: Hex ) => {
 
     const txs: BaseTransaction[] = []
 
-
-
     if (!await isModuleEnabled(info.safeAddress, safe7579Module)) {
         txs.push(await buildEnableModule(info.safeAddress, safe7579Module))
         txs.push(await buildUpdateFallbackHandler(info.safeAddress, safe7579Module))
         txs.push(await buildInitSafe7579())
  
-        txs.push(await buildOwnableInstallModule([ownerAddress], 1))
+        // txs.push(await buildOwnableInstallModule([ownerAddress], 1))
+        txs.push(await buildInstallModule(ownableModule, 'validator', encodeAbiParameters(
+            [
+              { name: 'threshold', type: 'uint256' },
+              { name: 'owners', type: 'address[]' },
+            ],
+            [BigInt(1), [ownerAddress]],
+          ),))
+
     }
-    else if(!await isInstalled(OWNABLE_VALIDATOR_ADDRESS, 'validator')) {
-        txs.push(await buildOwnableInstallModule([ownerAddress], 1))
+    else if(!await isInstalled(ownableModule, 'validator')) {
+        // txs.push(await buildOwnableInstallModule([ownerAddress], 1))
+        txs.push(await buildInstallModule(ownableModule, 'validator', encodeAbiParameters(
+            [
+              { name: 'threshold', type: 'uint256' },
+              { name: 'owners', type: 'address[]' },
+            ],
+            [BigInt(1), [ownerAddress]],
+          ),))
 
     }
 
